@@ -30,3 +30,5 @@ Search Conversations: Looking for a specific chat? Our search feature lets you f
 Notifications: Stay updated even when the app is closed. Receive notifications for new messages, ensuring you never miss an important conversation.
 Why Choose Flutter Chat App:
 Flutter Chat App brings you a perfect blend of aesthetics and functionality. Our app's responsive and adaptive UI, powered by Firebase, creates a seamless chat experience that adapts to your lifestyle. Whether you're chatting on the go with your smartphone or enjoying a tablet experience, Flutter Chat App ensures that you're always connected with those who matter most.
+
+
