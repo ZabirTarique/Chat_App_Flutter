@@ -1,14 +1,16 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../constants/constants.dart';
 import '../rounded_button.dart';
+import '../services/authentication_services.dart';
 import 'chat_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  static String id = '/login_screen';
+  //static String id = '/login_screen';
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -21,6 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
   String password='';
   bool _inProgess = false;
 
+  var authHandler = Auth();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,23 +33,23 @@ class _LoginScreenState extends State<LoginScreen> {
         inAsyncCall: _inProgess,
         color: Colors.blue,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Hero(
                 tag: 'logo',
-                child: Container(
+                child: SizedBox(
                   height: 200.0,
                   child: Image.asset('images/logo.png'),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 48.0,
               ),
               TextField(
-                style: TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
                 onChanged: (value) {
                   //Do something with the user input.
                   email = value;
@@ -54,12 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: 'Enter Your Email.'
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8.0,
               ),
               TextField(
                 obscureText: true,
-                style: TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
                 onChanged: (value) {
                   //Do something with the user input.
                   password = value;
@@ -68,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'Enter Your Password.'
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24.0,
               ),
               RoundedButton(
@@ -79,11 +83,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     _inProgess = true;
                   });
                   try{
-                    print(email+' '+password);
-                    final user = _auth.signInWithEmailAndPassword(email: email, password: password);
-                    if(user!=null){
-                      Navigator.pushNamed(context, ChatScreen.id);
+                    if (kDebugMode) {
+                      print('$email $password');
                     }
+                    final user = _auth.signInWithEmailAndPassword(email: email, password: password);
+                    Navigator.pushNamed(context, ChatScreen.id);
                     setState((){
                       _inProgess = false;
                     });

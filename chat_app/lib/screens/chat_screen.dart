@@ -1,8 +1,10 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../constants.dart';
+import 'login.dart';
 import 'login_screen.dart';
 class ChatScreen extends StatefulWidget {
   static String id = '/chat_screen';
@@ -12,10 +14,10 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
 
-  final _auth = FirebaseAuth.instance;
-  late User loggedinUser;
+  late final FirebaseAuth  _auth = FirebaseAuth.instance;
+  late User? loggedinUser;
   late String text;
-  var _firestore = FirebaseFirestore.instance;
+  final _firestore = FirebaseFirestore.instance;
   var messageTextController = TextEditingController();
 
   @override
@@ -25,23 +27,23 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
 
-  void getCurrentUser() async {
-    final User user = await _auth.currentUser!;
+  void getCurrentUser() {
+    final User? user = _auth.currentUser;
     try{
-      if(user != null){
-        loggedinUser = user;
-        print(loggedinUser.email);
-      }
+      loggedinUser = user!;
+      print("loggedinUser");
+      print(loggedinUser);
     }
     catch(e){
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
   void getMessages() async {
     var messages = await _firestore.collection('messages').get();
     for(var message in messages.docs){
-      print(message.data());
 
     }
   }
@@ -49,7 +51,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void getMessageStream() async {
     await  for(var snapshot in _firestore.collection('messages').snapshots()){
       for(var message in snapshot.docs){
-        print(message.data());
 
       }
     }
@@ -63,16 +64,16 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: null,
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               onPressed: () {
                 // getMessageStream();
                 _auth.signOut();
-                Navigator.pushNamed(context, LoginScreen.id);
+                Navigator.pushNamed(context, Login.id);
                 //Implement logout functionality
               }),
         ],
-        title: Text('⚡️Chat'),
-        backgroundColor: Colors.lightBlueAccent,
+        title: const Text('⚡️Chat'),
+        backgroundColor:  const Color.fromRGBO(255, 100, 127, 1),
       ),
       body: SafeArea(
         child: Column(
@@ -83,34 +84,37 @@ class _ChatScreenState extends State<ChatScreen> {
                 stream: _firestore.collection('messages').snapshots(),
                 builder: (context,snapshot){
                   if(!snapshot.hasData){
-                    return Center(child: CircularProgressIndicator(),);
+                    return  Column(
+                      children: [
+                        SizedBox(height: MediaQuery.of(context).size.height/3),
+                        const CircularProgressIndicator(color:Color.fromRGBO(255, 100, 127, 1),),
+                      ],
+                    );
                   }
-                  var messages = snapshot.data;
-                  // print(messages!.docs);
-                  List<MessageBubble> messageBubble = [];
-                  for (var message in messages!.docs){
-                    var m =message.data;
-                    final mText = (message.data() as dynamic)['text'] ?? '';
-                    final mSender = (message.data() as dynamic)['sender'] ?? '';
-                    bool isMe=false;
-                    if ( loggedinUser.email == mSender){
-                      isMe = true;
+                  else{
+                    var messages = snapshot.data;
+                     print("messages!.docs");
+                     print(messages!.docs);
+                    List<MessageBubble> messageBubble = [];
+                    for (var message in messages.docs){
+                      var m =message.data;
+                      final mText = (message.data() as dynamic)['text'] ?? '';
+                      final mSender = (message.data() as dynamic)['sender'] ?? '';
+                      bool isMe=false;
+                      if ( loggedinUser!.email == mSender){
+                        isMe = true;
+                      }
+                      messageBubble.add(MessageBubble(text: mText, email: mSender,isMe: isMe,));
                     }
-                    print('IsMe: '+isMe.toString());
-                    messageBubble.add(MessageBubble(text: mText, email: mSender,isMe: isMe,));
+                    return Expanded(
+                      child: ListView(
+                        reverse: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                        children: messageBubble,
+                      ),
+                    );
                   }
-                  return Expanded(
-                    child: ListView(
-                      reverse: true,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-                      children: messageBubble,
-                    ),
-                  );
-                  // var messages = snapshot.data.toString();
-                  // List<Text> textWidgetList = [];
-                  // for (var message in messages?? ){
-                  //
-                  // }
+
             }),
             Container(
               decoration: kMessageContainerDecoration,
@@ -127,16 +131,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
-                  FlatButton(
+                  MaterialButton(
                     onPressed: () {
                       messageTextController.clear();
                       _firestore.collection('messages').add({
                         'text': text,
-                        'sender': loggedinUser.email
+                        'sender': loggedinUser!.email
                       });
                       //Implement send functionality.
                     },
-                    child: Text(
+                    child: const Text(
                       'Send',
                       style: kSendButtonTextStyle,
                     ),
@@ -161,20 +165,20 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print(isMe);
-    return Padding(padding: EdgeInsets.all(10.0),
+    return Padding(padding: const EdgeInsets.all(10.0),
     child: Column(
       crossAxisAlignment: isMe? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Text(
             email,
-          style: TextStyle(),
+          style: const TextStyle(),
           ),
           Material(
             borderRadius: BorderRadius.circular(10.0),
             elevation: 5.0,
             color: isMe? Colors.white : Colors.lightBlue ,
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Text(
                 text,
                 style: TextStyle(

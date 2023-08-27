@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../constants/constants.dart';
@@ -10,11 +9,13 @@ import 'chat_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static String id = '/registration_screen';
+
+  const RegistrationScreen({super.key});
   @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
+  RegistrationScreenState createState() => RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class RegistrationScreenState extends State<RegistrationScreen> {
   final _auth = FirebaseAuth.instance;
   String email='';
   String password='';
@@ -82,9 +83,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   });
                   try{
                     final userAuth = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-                    if(userAuth!=null){
+                    if(mounted){
                       Navigator.pushNamed(context, ChatScreen.id);
                     }
+
                     setState((){
                       _inProgess = false;
                     });

@@ -1,17 +1,21 @@
 
 import 'package:chat_app/screens/registration_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../rounded_button.dart';
+import 'login.dart';
 import 'login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static String id = 'welcome_screen';
+
+  const WelcomeScreen({super.key});
   @override
-  _WelcomeScreenState createState() => _WelcomeScreenState();
+  WelcomeScreenState createState() => WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin{
+class WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin{
 
   late AnimationController controller;
   late Animation animation;
@@ -20,14 +24,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
   @override
   void initState()  {
     super.initState();
-    controller = AnimationController(vsync: this,duration: Duration(seconds: 1));
+    controller = AnimationController(vsync: this,duration: const Duration(seconds: 1));
     animation = CurvedAnimation(parent:controller,curve: Curves.easeOutCubic);
     controller.forward();
 
     controller.addListener(() {
       setState((){
       });
-      print( animation.value * 100);
+      if (kDebugMode) {
+        print( animation.value * 100);
+      }
     });
   }
 
@@ -37,7 +43,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(controller.value),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,12 +52,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
               children: <Widget>[
                 Hero(
                   tag: 'logo',
-                  child: Container(
-                    child: Image.asset('images/logo.png'),
+                  child: SizedBox(
                     height:( animation.value * 100),
+                    child: Image.asset('images/logo.png'),
                   ),
                 ),
-                Text(
+                const Text(
                   'Flash Chat',
                   style: TextStyle(
                     fontSize: 45.0,
@@ -61,11 +67,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 48.0,
             ),
             RoundedButton(title: 'Log In',color: Colors.lightBlueAccent,onPress: (){
-              Navigator.pushNamed(context, LoginScreen.id);
+              Navigator.pushNamed(context, Login.id);
 
             }),
             RoundedButton(title: 'Register', color: Colors.blue, onPress: (){
