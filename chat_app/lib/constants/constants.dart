@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-var kInputDecorations = InputDecoration(
+var kInputDecorations = const InputDecoration(
   hintText: '',
   hintStyle: TextStyle(color: Colors.black),
   contentPadding:
